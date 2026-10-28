@@ -1,0 +1,1522 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>EngiPocket - Mobile Engineering Companion</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome 6 CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <!-- Google Fonts Inter & Fira Code -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              dark: '#0f172a',
+              card: '#1e293b',
+              border: '#334155',
+              cyan: '#38bdf8',
+              emerald: '#10b981',
+              rose: '#f43f5e',
+              amber: '#f59e0b',
+              purple: '#a855f7'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['Fira Code', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom scrollbar & mobile styling */
+    body {
+      background-color: #0b1120;
+      color: #f1f5f9;
+      font-family: 'Inter', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    input, textarea, button, select {
+      user-select: auto;
+    }
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .hide-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .glass-card {
+      background: rgba(30, 41, 59, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(51, 65, 85, 0.7);
+    }
+    .tab-content {
+      display: none;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+    .tab-content.active {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body class="flex justify-center min-h-screen">
+
+  <!-- Mobile Viewport Container (Max 480px, centered on desktop, 100% on phones) -->
+  <div class="w-full max-w-[480px] min-h-screen bg-slate-900 flex flex-col relative shadow-2xl border-x border-slate-800">
+    
+    <!-- Top Mobile App Header -->
+    <header class="sticky top-0 z-40 bg-slate-900/95 backdrop-blur-md border-b border-slate-800 px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center space-x-2.5">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-sky-500 to-emerald-400 flex items-center justify-center shadow-lg shadow-sky-500/20">
+          <i class="fa-solid fa-microchip text-slate-950 text-base font-bold"></i>
+        </div>
+        <div>
+          <div class="flex items-center space-x-1.5">
+            <h1 class="text-base font-bold tracking-tight text-white">EngiPocket</h1>
+            <span class="text-[10px] font-semibold uppercase px-1.5 py-0.5 rounded-full bg-sky-500/10 text-sky-400 border border-sky-500/20">v1.0</span>
+          </div>
+          <p class="text-[11px] text-slate-400">Engineering Student Suite</p>
+        </div>
+      </div>
+      <div class="flex items-center space-x-2">
+        <button onclick="openAboutModal()" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center transition text-xs border border-slate-700/60" title="Giới thiệu & Hướng dẫn">
+          <i class="fa-solid fa-circle-question"></i>
+        </button>
+        <button onclick="toggleQuickTips()" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-400 flex items-center justify-center transition text-xs border border-slate-700/60" title="Mẹo ôn tập">
+          <i class="fa-solid fa-lightbulb"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Quick Tips Banner (Collapsible) -->
+    <div id="quickTipsBanner" class="hidden bg-gradient-to-r from-sky-950/60 to-slate-900 border-b border-sky-800/40 px-4 py-2.5 text-xs text-sky-200 flex items-start justify-between">
+      <div class="flex items-start space-x-2">
+        <i class="fa-solid fa-bell text-sky-400 mt-0.5"></i>
+        <p><span class="font-semibold text-white">Mẹo kỹ thuật:</span> Luôn quy đổi đơn vị SI (Rad/s, Ohm, F, H) trước khi bấm máy tính phức hoặc tính toán mạch!</p>
+      </div>
+      <button onclick="toggleQuickTips()" class="text-slate-400 hover:text-white ml-2 text-xs">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <!-- Main Scrollable Content Area -->
+    <main class="flex-1 overflow-y-auto px-4 py-4 pb-28 hide-scrollbar">
+      
+      <!-- ================= TAB 1: CALCULATORS ================= -->
+      <section id="tab-calculators" class="tab-content active space-y-5">
+        
+        <!-- Section Header -->
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-lg font-bold text-white flex items-center gap-2">
+              <i class="fa-solid fa-calculator text-sky-400"></i> Công cụ tính toán
+            </h2>
+            <p class="text-xs text-slate-400">Kèm bước giải chi tiết để đối chiếu học tập</p>
+          </div>
+          <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">Self-Check</span>
+        </div>
+
+        <!-- 1. Complex Numbers Converter -->
+        <div class="glass-card rounded-2xl p-4 border border-slate-700/80 shadow-lg">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center space-x-2">
+              <span class="w-6 h-6 rounded-lg bg-sky-500/20 text-sky-400 flex items-center justify-center text-xs">
+                <i class="fa-solid fa-wave-square"></i>
+              </span>
+              <h3 class="font-semibold text-sm text-slate-100">Số phức: Đại số &harr; Dạng cực</h3>
+            </div>
+            <span class="text-[10px] font-medium text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">Mạch AC & Điều khiển</span>
+          </div>
+
+          <!-- Mode Toggle -->
+          <div class="grid grid-cols-2 gap-1 bg-slate-950 p-1 rounded-xl mb-4 text-xs font-medium border border-slate-800">
+            <button id="btnComplexRectToPolar" onclick="switchComplexMode('rectToPolar')" class="py-1.5 rounded-lg bg-sky-500 text-slate-950 font-bold transition">
+              a + jb &rarr; r&ang;&theta;&deg;
+            </button>
+            <button id="btnComplexPolarToRect" onclick="switchComplexMode('polarToRect')" class="py-1.5 rounded-lg text-slate-400 hover:text-slate-200 transition">
+              r&ang;&theta;&deg; &rarr; a + jb
+            </button>
+          </div>
+
+          <!-- Form Rect to Polar -->
+          <div id="complexFormRect" class="space-y-3">
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs text-slate-400 mb-1 font-medium">Phần thực (a)</label>
+                <div class="relative">
+                  <input type="number" id="inputReal" value="3" step="any" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-sky-500 transition" placeholder="e.g. 3">
+                </div>
+              </div>
+              <div>
+                <label class="block text-xs text-slate-400 mb-1 font-medium">Phần ảo (b)</label>
+                <div class="relative">
+                  <input type="number" id="inputImag" value="4" step="any" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-sky-500 transition" placeholder="e.g. 4">
+                  <span class="absolute right-3 top-2 text-xs font-mono text-slate-500">j</span>
+                </div>
+              </div>
+            </div>
+            <button onclick="calculateComplexRect()" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-cyan-500 text-slate-950 font-bold text-xs flex items-center justify-center space-x-2 shadow-md hover:opacity-95 active:scale-[0.99] transition">
+              <i class="fa-solid fa-play text-xs"></i>
+              <span>Tính toán & Phân tích bước giải</span>
+            </button>
+          </div>
+
+          <!-- Form Polar to Rect -->
+          <div id="complexFormPolar" class="hidden space-y-3">
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs text-slate-400 mb-1 font-medium">Biên độ (r &ge; 0)</label>
+                <input type="number" id="inputR" value="5" min="0" step="any" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-sky-500 transition" placeholder="e.g. 5">
+              </div>
+              <div>
+                <label class="block text-xs text-slate-400 mb-1 font-medium">Góc pha (&theta;&deg;)</label>
+                <div class="relative">
+                  <input type="number" id="inputTheta" value="53.13" step="any" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-sky-500 transition" placeholder="e.g. 53.13">
+                  <span class="absolute right-3 top-2 text-xs font-mono text-slate-500">&deg;</span>
+                </div>
+              </div>
+            </div>
+            <button onclick="calculateComplexPolar()" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-cyan-500 text-slate-950 font-bold text-xs flex items-center justify-center space-x-2 shadow-md hover:opacity-95 active:scale-[0.99] transition">
+              <i class="fa-solid fa-play text-xs"></i>
+              <span>Quy đổi sang dạng a + jb</span>
+            </button>
+          </div>
+
+          <!-- Result & Step-by-Step Breakdown -->
+          <div id="complexResultBox" class="mt-4 p-3.5 bg-slate-950/80 rounded-xl border border-slate-800 text-xs space-y-2">
+            <div class="flex items-center justify-between border-b border-slate-800/80 pb-2">
+              <span class="text-slate-400">Kết quả dạng cực:</span>
+              <span id="resComplexPolar" class="font-mono font-bold text-sky-400 text-sm">5 &ang; 53.13&deg;</span>
+            </div>
+            <div class="flex items-center justify-between border-b border-slate-800/80 pb-2">
+              <span class="text-slate-400">Dạng Euler mũ:</span>
+              <span id="resComplexEuler" class="font-mono text-emerald-400 text-xs">5 &middot; e^(j 0.927 rad)</span>
+            </div>
+            
+            <!-- Step Breakdown -->
+            <div class="pt-1 text-[11px] text-slate-300 space-y-1.5 font-mono">
+              <p class="text-slate-400 font-sans font-semibold text-[11px] mb-1 flex items-center gap-1">
+                <i class="fa-solid fa-list-check text-sky-400"></i> Các bước suy luận:
+              </p>
+              <div id="complexStep1" class="bg-slate-900/90 p-2 rounded-lg border border-slate-800/60">
+                1. Biên độ: r = &radic;(a&sup2; + b&sup2;) = &radic;(3&sup2; + 4&sup2;) = 5
+              </div>
+              <div id="complexStep2" class="bg-slate-900/90 p-2 rounded-lg border border-slate-800/60">
+                2. Góc pha: &theta; = arctan(b/a) = arctan(4/3) &asymp; 53.13&deg; (Góc phần tư I)
+              </div>
+            </div>
+
+            <!-- Student Advisory Note -->
+            <div class="mt-2 text-[10px] text-amber-300/90 bg-amber-500/10 p-2 rounded-lg border border-amber-500/20 flex items-start gap-1.5 font-sans">
+              <i class="fa-solid fa-triangle-exclamation mt-0.5 text-amber-400"></i>
+              <span><strong>Lời khuyên:</strong> Dùng để đối chiếu kết quả sau khi tự giải bài tập, không lạm dụng khi chưa nắm vững quy tắc góc phần tư.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Matrix Quick Tool: 2x2 Determinant -->
+        <div class="glass-card rounded-2xl p-4 border border-slate-700/80 shadow-lg">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center space-x-2">
+              <span class="w-6 h-6 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center text-xs">
+                <i class="fa-solid fa-table-cells-large"></i>
+              </span>
+              <h3 class="font-semibold text-sm text-slate-100">Ma trận 2&times;2: Định thức & Nghịch đảo</h3>
+            </div>
+            <span class="text-[10px] font-medium text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded border border-purple-500/20">Đại số tuyến tính</span>
+          </div>
+
+          <!-- Visual 2x2 Matrix Input Grid -->
+          <div class="relative bg-slate-950 p-3.5 rounded-xl border border-slate-800 max-w-[280px] mx-auto mb-3">
+            <!-- Matrix brackets aesthetic -->
+            <div class="absolute left-1 top-2 bottom-2 w-2 border-l-2 border-t-2 border-b-2 border-slate-500 rounded-l"></div>
+            <div class="absolute right-1 top-2 bottom-2 w-2 border-r-2 border-t-2 border-b-2 border-slate-500 rounded-r"></div>
+            
+            <div class="grid grid-cols-2 gap-2.5 px-3">
+              <div>
+                <span class="text-[10px] font-mono text-slate-500 block text-center mb-0.5">a (1,1)</span>
+                <input type="number" id="matA" value="4" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-center text-sm font-mono text-white focus:outline-none focus:border-purple-400">
+              </div>
+              <div>
+                <span class="text-[10px] font-mono text-slate-500 block text-center mb-0.5">b (1,2)</span>
+                <input type="number" id="matB" value="2" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-center text-sm font-mono text-white focus:outline-none focus:border-purple-400">
+              </div>
+              <div>
+                <span class="text-[10px] font-mono text-slate-500 block text-center mb-0.5">c (2,1)</span>
+                <input type="number" id="matC" value="3" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-center text-sm font-mono text-white focus:outline-none focus:border-purple-400">
+              </div>
+              <div>
+                <span class="text-[10px] font-mono text-slate-500 block text-center mb-0.5">d (2,2)</span>
+                <input type="number" id="matD" value="5" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-center text-sm font-mono text-white focus:outline-none focus:border-purple-400">
+              </div>
+            </div>
+          </div>
+
+          <button onclick="calculateMatrix()" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-purple-500 to-indigo-500 text-white font-bold text-xs flex items-center justify-center space-x-2 shadow-md hover:opacity-95 active:scale-[0.99] transition mb-3">
+            <i class="fa-solid fa-calculator"></i>
+            <span>Tính Định thức det(A) & Nghịch đảo A⁻¹</span>
+          </button>
+
+          <!-- Determinant Result & Step Breakdown -->
+          <div id="matrixResultBox" class="p-3.5 bg-slate-950/80 rounded-xl border border-slate-800 text-xs space-y-2">
+            <div class="flex items-center justify-between border-b border-slate-800/80 pb-2">
+              <span class="text-slate-400">Định thức det(A):</span>
+              <span id="resDetValue" class="font-mono font-bold text-purple-400 text-base">14</span>
+            </div>
+
+            <!-- Visual calculation formula -->
+            <div class="p-2.5 bg-slate-900/90 rounded-lg border border-slate-800 font-mono text-xs">
+              <div class="text-slate-400 text-[11px] mb-1">Công thức: det(A) = a&middot;d - b&middot;c</div>
+              <div id="resDetFormula" class="text-slate-200">
+                det(A) = (<span class="text-sky-400">4 &times; 5</span>) - (<span class="text-amber-400">2 &times; 3</span>) = 20 - 6 = <span class="text-purple-400 font-bold">14</span>
+              </div>
+            </div>
+
+            <!-- Inverse Matrix Result -->
+            <div class="pt-1">
+              <span class="text-slate-400 text-[11px] block mb-1">Ma trận nghịch đảo A⁻¹:</span>
+              <div id="resInverseMatrix" class="font-mono text-xs text-emerald-400 bg-slate-900/90 p-2 rounded-lg border border-slate-800 flex justify-center items-center gap-2">
+                <span>[ 5/14 , -2/14 ]</span><br>
+                <span>[ -3/14 , 4/14 ]</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Voltage Divider Quick Calc (Bonus Engineering Tool) -->
+        <div class="glass-card rounded-2xl p-4 border border-slate-700/80 shadow-lg">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center space-x-2">
+              <span class="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs">
+                <i class="fa-solid fa-bolt"></i>
+              </span>
+              <h3 class="font-semibold text-sm text-slate-100">Cầu phân áp điện trở (Voltage Divider)</h3>
+            </div>
+            <span class="text-[10px] font-medium text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">Kỹ thuật điện</span>
+          </div>
+
+          <div class="grid grid-cols-3 gap-2 mb-3">
+            <div>
+              <label class="block text-[10px] text-slate-400 mb-0.5 font-medium">Vin (V)</label>
+              <input type="number" id="vdVin" value="12" step="any" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-1.5 text-xs font-mono text-white text-center">
+            </div>
+            <div>
+              <label class="block text-[10px] text-slate-400 mb-0.5 font-medium">R1 (&Omega;)</label>
+              <input type="number" id="vdR1" value="1000" step="any" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-1.5 text-xs font-mono text-white text-center">
+            </div>
+            <div>
+              <label class="block text-[10px] text-slate-400 mb-0.5 font-medium">R2 (&Omega;)</label>
+              <input type="number" id="vdR2" value="2000" step="any" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-1.5 text-xs font-mono text-white text-center">
+            </div>
+          </div>
+
+          <button onclick="calculateVoltageDivider()" class="w-full py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-400 font-semibold text-xs border border-emerald-500/30 transition">
+            Tính Vout = Vin &times; R2 / (R1 + R2)
+          </button>
+
+          <div id="vdResultBox" class="mt-2.5 p-2.5 bg-slate-950/80 rounded-xl border border-slate-800 flex items-center justify-between text-xs">
+            <span class="text-slate-400">Điện áp ra Vout:</span>
+            <span id="vdVout" class="font-mono font-bold text-emerald-400 text-sm">8.00 V</span>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ================= TAB 2: FORMULAS ================= -->
+      <section id="tab-formulas" class="tab-content space-y-4">
+        <!-- Section Header -->
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-lg font-bold text-white flex items-center gap-2">
+              <i class="fa-solid fa-square-root-variable text-sky-400"></i> Cẩm nang công thức
+            </h2>
+            <p class="text-xs text-slate-400">Tra cứu nhanh công thức kỹ thuật then chốt</p>
+          </div>
+          <span id="formulaCountBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-400 border border-sky-500/30">8 items</span>
+        </div>
+
+        <!-- Instant Search Bar -->
+        <div class="relative">
+          <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-500 text-xs"></i>
+          <input type="text" id="formulaSearchInput" oninput="filterFormulas()" placeholder="Tìm kiếm nhanh: Laplace, Ohm, Fourier, Euler..." class="w-full bg-slate-950/90 border border-slate-700/80 rounded-xl pl-9 pr-8 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-sky-500 transition">
+          <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute right-3 top-2.5 text-slate-500 hover:text-slate-300 text-xs">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <!-- Category Filter Chips -->
+        <div class="flex space-x-1.5 overflow-x-auto pb-1 hide-scrollbar text-[11px] font-medium">
+          <button onclick="setCategoryFilter('all')" class="cat-chip active px-3 py-1 rounded-full bg-sky-500 text-slate-950 font-bold whitespace-nowrap transition" data-cat="all">Tất cả</button>
+          <button onclick="setCategoryFilter('math')" class="cat-chip px-3 py-1 rounded-full bg-slate-800 text-slate-300 hover:text-white whitespace-nowrap transition" data-cat="math">Toán & Vi tích phân</button>
+          <button onclick="setCategoryFilter('electric')" class="cat-chip px-3 py-1 rounded-full bg-slate-800 text-slate-300 hover:text-white whitespace-nowrap transition" data-cat="electric">Kỹ thuật Điện</button>
+          <button onclick="setCategoryFilter('control')" class="cat-chip px-3 py-1 rounded-full bg-slate-800 text-slate-300 hover:text-white whitespace-nowrap transition" data-cat="control">Điều khiển & Tín hiệu</button>
+        </div>
+
+        <!-- Formula Cards Container -->
+        <div id="formulaCardsList" class="space-y-3">
+          <!-- Dynamically populated or rendered -->
+        </div>
+
+        <!-- Empty Search Fallback -->
+        <div id="emptyFormulaState" class="hidden text-center py-10 text-slate-500 space-y-2">
+          <i class="fa-solid fa-file-circle-question text-3xl text-slate-600"></i>
+          <p class="text-xs">Không tìm thấy công thức phù hợp với từ khóa.</p>
+        </div>
+      </section>
+
+      <!-- ================= TAB 3: PRACTICE QUIZ ================= -->
+      <section id="tab-quiz" class="tab-content space-y-4">
+        <!-- Section Header -->
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-lg font-bold text-white flex items-center gap-2">
+              <i class="fa-solid fa-graduation-cap text-sky-400"></i> Luyện thi trắc nghiệm
+            </h2>
+            <p class="text-xs text-slate-400">Củng cố tư duy với phản hồi & giải thích tức thì</p>
+          </div>
+          <div class="text-right">
+            <div class="text-[10px] text-slate-400">Điểm số hiện tại</div>
+            <div id="quizScoreDisplay" class="text-xs font-mono font-bold text-emerald-400">0 / 0</div>
+          </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+          <div id="quizProgressBar" class="bg-gradient-to-r from-sky-500 to-emerald-400 h-full w-0 transition-all duration-300"></div>
+        </div>
+
+        <!-- Quiz Main Card -->
+        <div id="quizCard" class="glass-card rounded-2xl p-4 border border-slate-700/80 shadow-lg space-y-4">
+          <!-- Subject & Question Index Badge -->
+          <div class="flex items-center justify-between">
+            <span id="quizSubjectTag" class="text-[10px] font-semibold uppercase px-2 py-0.5 rounded bg-sky-500/10 text-sky-400 border border-sky-500/20">
+              Đại số tuyến tính
+            </span>
+            <span id="quizQuestionNumber" class="text-xs font-mono text-slate-400">
+              Câu 1 / 5
+            </span>
+          </div>
+
+          <!-- Question Prompt -->
+          <p id="quizQuestionText" class="text-sm font-semibold text-slate-100 leading-relaxed">
+            Đang tải câu hỏi trắc nghiệm...
+          </p>
+
+          <!-- Options Container -->
+          <div id="quizOptionsContainer" class="space-y-2">
+            <!-- Rendered by JS -->
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="flex space-x-2 pt-1">
+            <button id="btnCheckAnswer" onclick="checkCurrentAnswer()" class="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-cyan-500 text-slate-950 font-bold text-xs flex items-center justify-center space-x-2 shadow-md hover:opacity-95 transition">
+              <i class="fa-solid fa-circle-check"></i>
+              <span>Kiểm tra đáp án</span>
+            </button>
+            <button id="btnNextQuestion" onclick="goToNextQuestion()" class="hidden flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs flex items-center justify-center space-x-2 border border-slate-700 transition">
+              <span>Câu tiếp theo</span>
+              <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </div>
+
+          <!-- Explanation Feedback Box (Hidden initially) -->
+          <div id="quizExplanationBox" class="hidden p-3.5 rounded-xl border text-xs space-y-2 transition-all duration-300">
+            <div class="flex items-center space-x-2 font-bold" id="quizFeedbackBadge">
+              <!-- Result Icon & Text -->
+            </div>
+            <div id="quizExplanationText" class="text-slate-300 leading-relaxed font-sans text-[11px] pt-1 border-t border-slate-800">
+              <!-- Explanation details -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Quiz Reset / Highscore summary -->
+        <div class="p-3 bg-slate-950/60 rounded-xl border border-slate-800 flex items-center justify-between text-xs text-slate-400">
+          <div class="flex items-center space-x-2">
+            <i class="fa-solid fa-trophy text-amber-400"></i>
+            <span>Kỷ lục cao nhất: <strong id="highScoreText" class="text-white font-mono">0 điểm</strong></span>
+          </div>
+          <button onclick="restartQuiz()" class="text-sky-400 hover:text-sky-300 text-xs flex items-center gap-1">
+            <i class="fa-solid fa-rotate-right"></i> Làm lại
+          </button>
+        </div>
+      </section>
+
+      <!-- ================= TAB 4: DEADLINES ================= -->
+      <section id="tab-deadlines" class="tab-content space-y-4">
+        <!-- Section Header -->
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-lg font-bold text-white flex items-center gap-2">
+              <i class="fa-solid fa-clock text-sky-400"></i> Đếm ngược Deadline
+            </h2>
+            <p class="text-xs text-slate-400">Theo dõi lịch thi & báo cáo môn học</p>
+          </div>
+          <button onclick="toggleAddTaskModal(true)" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold text-xs flex items-center gap-1.5 shadow-md active:scale-95 transition">
+            <i class="fa-solid fa-plus text-xs"></i>
+            <span>Thêm mới</span>
+          </button>
+        </div>
+
+        <!-- Filter Chips: All, Upcoming, Completed -->
+        <div class="flex space-x-1.5 text-xs font-medium">
+          <button onclick="setDeadlineFilter('active')" id="filterDlActive" class="px-3 py-1 rounded-lg bg-sky-500 text-slate-950 font-bold transition">Chưa hoàn thành</button>
+          <button onclick="setDeadlineFilter('all')" id="filterDlAll" class="px-3 py-1 rounded-lg bg-slate-800 text-slate-300 hover:text-white transition">Tất cả</button>
+          <button onclick="setDeadlineFilter('completed')" id="filterDlDone" class="px-3 py-1 rounded-lg bg-slate-800 text-slate-300 hover:text-white transition">Đã xong</button>
+        </div>
+
+        <!-- Deadline Cards List -->
+        <div id="deadlineList" class="space-y-3">
+          <!-- Rendered dynamically -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyDeadlineState" class="hidden text-center py-10 text-slate-500 space-y-2">
+          <i class="fa-solid fa-calendar-check text-3xl text-emerald-500/60"></i>
+          <p class="text-xs">Chưa có deadline nào. Bấm "+ Thêm mới" để đặt mục tiêu ôn tập!</p>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Modal: Add New Deadline -->
+    <div id="addDeadlineModal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 transition-opacity">
+      <div class="bg-slate-900 border border-slate-700/90 w-full max-w-[480px] rounded-t-2xl sm:rounded-2xl p-5 shadow-2xl space-y-4">
+        <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+          <h3 class="text-sm font-bold text-white flex items-center gap-2">
+            <i class="fa-solid fa-calendar-plus text-emerald-400"></i> Thêm bài tập / Lịch thi
+          </h3>
+          <button onclick="toggleAddTaskModal(false)" class="text-slate-400 hover:text-white text-sm">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <form id="addDeadlineForm" onsubmit="handleCreateDeadline(event)" class="space-y-3">
+          <div>
+            <label class="block text-xs text-slate-400 mb-1 font-medium">Tên công việc / Kỳ thi <span class="text-rose-400">*</span></label>
+            <input type="text" id="inputTaskTitle" required placeholder="e.g. Thi giữa kỳ Giải tích 2, Báo cáo VĐK" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-500">
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs text-slate-400 mb-1 font-medium">Môn học</label>
+              <input type="text" id="inputTaskSubject" placeholder="e.g. Toán KT, Điện tử" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-500">
+            </div>
+            <div>
+              <label class="block text-xs text-slate-400 mb-1 font-medium">Mức độ ưu tiên</label>
+              <select id="inputTaskPriority" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-2.5 py-2 text-xs text-white focus:outline-none focus:border-sky-500">
+                <option value="high">Rất quan trọng</option>
+                <option value="medium" selected>Bình thường</option>
+                <option value="low">Thấp</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs text-slate-400 mb-1 font-medium">Hạn chót (Ngày & Giờ) <span class="text-rose-400">*</span></label>
+            <input type="datetime-local" id="inputTaskDatetime" required class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-500">
+          </div>
+
+          <div class="flex space-x-2 pt-2">
+            <button type="button" onclick="toggleAddTaskModal(false)" class="flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium text-xs transition">
+              Hủy bỏ
+            </button>
+            <button type="submit" class="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold text-xs shadow-md transition">
+              Lưu Deadline
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal: About EngiPocket -->
+    <div id="aboutModal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+      <div class="bg-slate-900 border border-slate-700/90 w-full max-w-[420px] rounded-2xl p-5 shadow-2xl space-y-3.5 text-xs text-slate-300">
+        <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+          <div class="flex items-center gap-2">
+            <i class="fa-solid fa-microchip text-sky-400 text-base"></i>
+            <h3 class="text-sm font-bold text-white">Về EngiPocket</h3>
+          </div>
+          <button onclick="closeAboutModal()" class="text-slate-400 hover:text-white text-sm">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <p class="leading-relaxed">
+          <strong>EngiPocket</strong> là ứng dụng web di động bỏ túi được tối ưu hóa đặc biệt cho sinh viên các khối ngành Kỹ thuật (Điện - Điện tử, Cơ điện tử, Tự động hóa, CNTT).
+        </p>
+        <div class="space-y-1.5 bg-slate-950 p-3 rounded-xl border border-slate-800 text-[11px]">
+          <div class="flex items-center gap-2 text-sky-300">
+            <i class="fa-solid fa-check text-emerald-400"></i> Tính toán số phức, định thức ma trận kèm giải thích.
+          </div>
+          <div class="flex items-center gap-2 text-sky-300">
+            <i class="fa-solid fa-check text-emerald-400"></i> Cẩm nang công thức Laplace, Fourier, Euler tức thì.
+          </div>
+          <div class="flex items-center gap-2 text-sky-300">
+            <i class="fa-solid fa-check text-emerald-400"></i> Luyện thi trắc nghiệm & đếm ngược hạn nộp bài.
+          </div>
+        </div>
+        <p class="text-[10px] text-slate-500 text-center pt-1">
+          Dữ liệu lưu an toàn trên trình duyệt điện thoại (LocalStorage).
+        </p>
+        <button onclick="closeAboutModal()" class="w-full py-2 rounded-xl bg-sky-500 text-slate-950 font-bold text-xs transition">
+          Đã hiểu & Bắt đầu học
+        </button>
+      </div>
+    </div>
+
+    <!-- Toast Notification Banner -->
+    <div id="toastNotification" class="fixed top-5 left-1/2 -translate-x-1/2 max-w-[380px] w-[90%] bg-slate-950/95 border border-sky-500/50 text-white px-4 py-2.5 rounded-xl shadow-xl flex items-center space-x-2 text-xs z-50 transform -translate-y-16 opacity-0 transition-all duration-300 pointer-events-none">
+      <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400 text-sm"></i>
+      <span id="toastMessage" class="flex-1 font-medium">Thông báo</span>
+    </div>
+
+    <!-- Fixed Bottom Mobile Navigation Bar (Thumb Friendly) -->
+    <nav class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] bg-slate-950/95 backdrop-blur-xl border-t border-slate-800/90 z-50 px-2 py-2 flex justify-around items-center">
+      
+      <!-- Tab 1: Calculators -->
+      <button onclick="switchTab('calculators')" id="nav-calculators" class="nav-item active flex-1 flex flex-col items-center justify-center py-1 rounded-xl text-sky-400 transition">
+        <div class="nav-icon-box w-9 h-7 rounded-lg flex items-center justify-center text-sm mb-0.5">
+          <i class="fa-solid fa-calculator"></i>
+        </div>
+        <span class="text-[10px] font-semibold tracking-tight">Tính toán</span>
+      </button>
+
+      <!-- Tab 2: Formulas -->
+      <button onclick="switchTab('formulas')" id="nav-formulas" class="nav-item flex-1 flex flex-col items-center justify-center py-1 rounded-xl text-slate-400 hover:text-slate-200 transition">
+        <div class="nav-icon-box w-9 h-7 rounded-lg flex items-center justify-center text-sm mb-0.5">
+          <i class="fa-solid fa-square-root-variable"></i>
+        </div>
+        <span class="text-[10px] font-semibold tracking-tight">Công thức</span>
+      </button>
+
+      <!-- Tab 3: Quiz -->
+      <button onclick="switchTab('quiz')" id="nav-quiz" class="nav-item flex-1 flex flex-col items-center justify-center py-1 rounded-xl text-slate-400 hover:text-slate-200 transition">
+        <div class="nav-icon-box w-9 h-7 rounded-lg flex items-center justify-center text-sm mb-0.5">
+          <i class="fa-solid fa-graduation-cap"></i>
+        </div>
+        <span class="text-[10px] font-semibold tracking-tight">Luyện thi</span>
+      </button>
+
+      <!-- Tab 4: Deadlines -->
+      <button onclick="switchTab('deadlines')" id="nav-deadlines" class="nav-item flex-1 flex flex-col items-center justify-center py-1 rounded-xl text-slate-400 hover:text-slate-200 transition relative">
+        <div class="nav-icon-box w-9 h-7 rounded-lg flex items-center justify-center text-sm mb-0.5">
+          <i class="fa-solid fa-clock"></i>
+        </div>
+        <span class="text-[10px] font-semibold tracking-tight">Thời hạn</span>
+        <span id="navDeadlineDot" class="hidden absolute top-1 right-5 w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
+      </button>
+
+    </nav>
+
+  </div>
+
+  <!-- Application Logic (Vanilla JS) -->
+  <script>
+    /* ==========================================================================
+       1. GLOBAL STATE & LOCALSTORAGE HELPERS
+       ========================================================================== */
+    const STORAGE_KEY_DEADLINES = 'engipocket_deadlines_v1';
+    const STORAGE_KEY_QUIZ_HIGHSCORE = 'engipocket_quiz_highscore_v1';
+    const STORAGE_KEY_BOOKMARKS = 'engipocket_formula_bookmarks_v1';
+
+    let currentTab = 'calculators';
+    let currentCategoryFilter = 'all';
+    let currentDeadlineFilter = 'active';
+
+    // Toast Notification Utility
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toastNotification');
+      const toastMsg = document.getElementById('toastMessage');
+      const toastIcon = document.getElementById('toastIcon');
+
+      toastMsg.innerText = message;
+      if (type === 'success') {
+        toastIcon.className = 'fa-solid fa-circle-check text-emerald-400 text-sm';
+      } else if (type === 'warning') {
+        toastIcon.className = 'fa-solid fa-triangle-exclamation text-amber-400 text-sm';
+      } else {
+        toastIcon.className = 'fa-solid fa-circle-info text-sky-400 text-sm';
+      }
+
+      toast.classList.remove('-translate-y-16', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      setTimeout(() => {
+        toast.classList.add('-translate-y-16', 'opacity-0');
+        toast.classList.remove('translate-y-0', 'opacity-100');
+      }, 2500);
+    }
+
+    /* ==========================================================================
+       2. TAB NAVIGATION SYSTEM
+       ========================================================================== */
+    function switchTab(tabId) {
+      currentTab = tabId;
+
+      // Update Tab Views
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      const targetContent = document.getElementById(`tab-${tabId}`);
+      if (targetContent) targetContent.classList.add('active');
+
+      // Update Nav Buttons
+      document.querySelectorAll('.nav-item').forEach(btn => {
+        btn.classList.remove('text-sky-400');
+        btn.classList.add('text-slate-400');
+        btn.querySelector('.nav-icon-box').classList.remove('bg-sky-500/15');
+      });
+
+      const activeBtn = document.getElementById(`nav-${tabId}`);
+      if (activeBtn) {
+        activeBtn.classList.add('text-sky-400');
+        activeBtn.classList.remove('text-slate-400');
+        activeBtn.querySelector('.nav-icon-box').classList.add('bg-sky-500/15');
+      }
+
+      // Scroll container to top
+      document.querySelector('main').scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function toggleQuickTips() {
+      const banner = document.getElementById('quickTipsBanner');
+      banner.classList.toggle('hidden');
+    }
+
+    function openAboutModal() {
+      document.getElementById('aboutModal').classList.remove('hidden');
+    }
+    function closeAboutModal() {
+      document.getElementById('aboutModal').classList.add('hidden');
+    }
+
+    /* ==========================================================================
+       3. TAB 1: CALCULATORS LOGIC
+       ========================================================================== */
+    let complexMode = 'rectToPolar';
+
+    function switchComplexMode(mode) {
+      complexMode = mode;
+      const btnR2P = document.getElementById('btnComplexRectToPolar');
+      const btnP2R = document.getElementById('btnComplexPolarToRect');
+      const formR = document.getElementById('complexFormRect');
+      const formP = document.getElementById('complexFormPolar');
+
+      if (mode === 'rectToPolar') {
+        btnR2P.className = 'py-1.5 rounded-lg bg-sky-500 text-slate-950 font-bold transition';
+        btnP2R.className = 'py-1.5 rounded-lg text-slate-400 hover:text-slate-200 transition';
+        formR.classList.remove('hidden');
+        formP.classList.add('hidden');
+        calculateComplexRect();
+      } else {
+        btnP2R.className = 'py-1.5 rounded-lg bg-sky-500 text-slate-950 font-bold transition';
+        btnR2P.className = 'py-1.5 rounded-lg text-slate-400 hover:text-slate-200 transition';
+        formP.classList.remove('hidden');
+        formR.classList.add('hidden');
+        calculateComplexPolar();
+      }
+    }
+
+    function calculateComplexRect() {
+      const a = parseFloat(document.getElementById('inputReal').value) || 0;
+      const b = parseFloat(document.getElementById('inputImag').value) || 0;
+
+      // Magnitude r = sqrt(a^2 + b^2)
+      const r = Math.sqrt(a * a + b * b);
+      // Angle theta in radians & degrees
+      const thetaRad = Math.atan2(b, a);
+      let thetaDeg = (thetaRad * 180) / Math.PI;
+
+      // Format outputs
+      document.getElementById('resComplexPolar').innerHTML = `${r.toFixed(3).replace(/\.?0+$/, '')} &ang; ${thetaDeg.toFixed(2)}&deg;`;
+      document.getElementById('resComplexEuler').innerHTML = `${r.toFixed(3).replace(/\.?0+$/, '')} &middot; e^(j ${thetaRad.toFixed(3)} rad)`;
+
+      // Step by step breakdown
+      let quadrantDesc = "Góc phần tư I";
+      if (a < 0 && b >= 0) quadrantDesc = "Góc phần tư II (+180°)";
+      else if (a < 0 && b < 0) quadrantDesc = "Góc phần tư III (-180°)";
+      else if (a >= 0 && b < 0) quadrantDesc = "Góc phần tư IV";
+
+      document.getElementById('complexStep1').innerHTML = `1. Biên độ: r = &radic;(a&sup2; + b&sup2;) = &radic;(${a}&sup2; + ${b}&sup2;) = <strong>${r.toFixed(3)}</strong>`;
+      document.getElementById('complexStep2').innerHTML = `2. Góc pha: &theta; = atan2(b=${b}, a=${a}) = <strong>${thetaDeg.toFixed(2)}&deg;</strong> (${quadrantDesc})`;
+    }
+
+    function calculateComplexPolar() {
+      const r = Math.max(0, parseFloat(document.getElementById('inputR').value) || 0);
+      const thetaDeg = parseFloat(document.getElementById('inputTheta').value) || 0;
+      const thetaRad = (thetaDeg * Math.PI) / 180;
+
+      const a = r * Math.cos(thetaRad);
+      const b = r * Math.sin(thetaRad);
+
+      const sign = b >= 0 ? '+' : '-';
+      const absB = Math.abs(b);
+
+      document.getElementById('resComplexPolar').innerHTML = `${a.toFixed(3)} ${sign} j${absB.toFixed(3)}`;
+      document.getElementById('resComplexEuler').innerHTML = `Dạng tọa độ Decartes: (${a.toFixed(3)}, ${b.toFixed(3)})`;
+
+      document.getElementById('complexStep1').innerHTML = `1. Phần thực: a = r &middot; cos(&theta;) = ${r} &middot; cos(${thetaDeg}&deg;) = <strong>${a.toFixed(3)}</strong>`;
+      document.getElementById('complexStep2').innerHTML = `2. Phần ảo: b = r &middot; sin(&theta;) = ${r} &middot; sin(${thetaDeg}&deg;) = <strong>${b.toFixed(3)}</strong>`;
+    }
+
+    // Matrix 2x2 Determinant & Inverse
+    function calculateMatrix() {
+      const a = parseFloat(document.getElementById('matA').value) || 0;
+      const b = parseFloat(document.getElementById('matB').value) || 0;
+      const c = parseFloat(document.getElementById('matC').value) || 0;
+      const d = parseFloat(document.getElementById('matD').value) || 0;
+
+      // Determinant = ad - bc
+      const det = (a * d) - (b * c);
+      document.getElementById('resDetValue').innerText = det.toLocaleString('vi-VN');
+
+      document.getElementById('resDetFormula').innerHTML = 
+        `det(A) = (<span class="text-sky-400">${a} &times; ${d}</span>) - (<span class="text-amber-400">${b} &times; ${c}</span>) = ${(a*d)} - ${(b*c)} = <strong class="text-purple-400">${det}</strong>`;
+
+      const invBox = document.getElementById('resInverseMatrix');
+      if (det === 0) {
+        invBox.innerHTML = '<span class="text-rose-400 font-sans">Không tồn tại A⁻¹ vì det(A) = 0 (Ma trận suy biến).</span>';
+      } else {
+        const invA = (d / det).toFixed(3);
+        const invB = (-b / det).toFixed(3);
+        const invC = (-c / det).toFixed(3);
+        const invD = (a / det).toFixed(3);
+        invBox.innerHTML = `
+          <div class="text-center">
+            <div>[ ${invA} , ${invB} ]</div>
+            <div>[ ${invC} , ${invD} ]</div>
+          </div>
+        `;
+      }
+    }
+
+    // Voltage Divider Calculator
+    function calculateVoltageDivider() {
+      const vin = parseFloat(document.getElementById('vdVin').value) || 0;
+      const r1 = parseFloat(document.getElementById('vdR1').value) || 0;
+      const r2 = parseFloat(document.getElementById('vdR2').value) || 0;
+
+      if ((r1 + r2) <= 0) {
+        document.getElementById('vdVout').innerText = "Lỗi R1+R2 > 0";
+        return;
+      }
+
+      const vout = vin * (r2 / (r1 + r2));
+      document.getElementById('vdVout').innerText = `${vout.toFixed(2)} V`;
+      showToast(`Đã tính Vout = ${vout.toFixed(2)} V`);
+    }
+
+    /* ==========================================================================
+       4. TAB 2: FORMULAS REPOSITORY & SEARCH
+       ========================================================================== */
+    const FORMULA_DATABASE = [
+      {
+        id: 'f1',
+        title: 'Biến đổi Laplace hàm mũ',
+        cat: 'control',
+        formula: 'L{ e^(at) } = 1 / (s - a)',
+        variables: 's: biến tần số phức, a: hằng số',
+        note: 'Áp dụng liên tục trong giải phương trình vi phân và tìm đáp ứng quá độ của mạch RLC.'
+      },
+      {
+        id: 'f2',
+        title: 'Laplace Sin & Cos',
+        cat: 'control',
+        formula: 'L{ sin(ωt) } = ω / (s² + ω²)\nL{ cos(ωt) } = s / (s² + ω²)',
+        variables: 'ω: tần số góc (rad/s)',
+        note: 'Dùng xác định đáp ứng tần số và phân tích dao động hệ thống bậc 2.'
+      },
+      {
+        id: 'f3',
+        title: 'Định luật Ohm & Công suất phức AC',
+        cat: 'electric',
+        formula: 'V = I · Z\nS = P + jQ = V · I*',
+        variables: 'Z: trở kháng phức (R + jX), S: công suất biểu kiến (VA)',
+        note: 'P (W) là công suất tác dụng, Q (VAr) là công suất phản kháng.'
+      },
+      {
+        id: 'f4',
+        title: 'Hàm truyền vòng kín (Closed-Loop Transfer)',
+        cat: 'control',
+        formula: 'T(s) = G(s) / [ 1 + G(s)·H(s) ]',
+        variables: 'G(s): khâu thuận, H(s): khâu phản hồi',
+        note: 'Phương trình đặc trưng 1 + G(s)H(s) = 0 quyết định độ ổn định hệ thống.'
+      },
+      {
+        id: 'f5',
+        title: 'Biến đổi Fourier liên tục',
+        cat: 'control',
+        formula: 'X(ω) = ∫ x(t) · e^(-jωt) dt  (-∞ đến +∞)',
+        variables: 'x(t): tín hiệu miền thời gian, X(ω): phổ tần số',
+        note: 'Chuyển đổi tín hiệu sang miền tần số để thiết kế bộ lọc âm và xử lý tín hiệu số.'
+      },
+      {
+        id: 'f6',
+        title: 'Công thức Euler & Lượng giác',
+        cat: 'math',
+        formula: 'e^(jθ) = cos(θ) + j·sin(θ)',
+        variables: 'j = √(-1), θ: góc pha (rad)',
+        note: 'Cầu nối giữa đại số số phức và sóng điều hòa xoay chiều trong kỹ thuật điện.'
+      },
+      {
+        id: 'f7',
+        title: 'Quy tắc Đạo hàm tích & Tích phân từng phần',
+        cat: 'math',
+        formula: '(u·v)\' = u\'v + uv\'\n∫ u dv = u·v - ∫ v du',
+        variables: 'u(x), v(x) là các hàm khả vi',
+        note: 'Thứ tự ưu tiên đặt u: Lôgarit, Đa thức, Lượng giác, Mũ (Nhất log, nhì đa, tam lượng, tứ mũ).'
+      },
+      {
+        id: 'f8',
+        title: 'Định luật Dòng & Áp Kirchhoff (KCL & KVL)',
+        cat: 'electric',
+        formula: 'Σ I_vào = Σ I_ra (KCL)\nΣ V_vòng = 0 (KVL)',
+        variables: 'I: cường độ dòng điện tại nút, V: điện áp từng nhánh',
+        note: 'Nền tảng của phương pháp điện thế nút và dòng điện nhánh trong giải tích mạch.'
+      }
+    ];
+
+    function renderFormulas(list) {
+      const container = document.getElementById('formulaCardsList');
+      const emptyState = document.getElementById('emptyFormulaState');
+      const countBadge = document.getElementById('formulaCountBadge');
+
+      countBadge.innerText = `${list.length} mục`;
+
+      if (list.length === 0) {
+        container.innerHTML = '';
+        emptyState.classList.remove('hidden');
+        return;
+      }
+      emptyState.classList.add('hidden');
+
+      container.innerHTML = list.map(item => {
+        let tagColor = 'bg-sky-500/10 text-sky-400 border-sky-500/20';
+        let tagName = 'Toán KT';
+        if (item.cat === 'electric') {
+          tagColor = 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
+          tagName = 'Kỹ thuật Điện';
+        } else if (item.cat === 'control') {
+          tagColor = 'bg-purple-500/10 text-purple-400 border-purple-500/20';
+          tagName = 'Điều khiển';
+        }
+
+        return `
+          <div class="glass-card rounded-2xl p-4 border border-slate-700/80 shadow-md space-y-2.5 transition hover:border-slate-600">
+            <div class="flex items-start justify-between">
+              <div>
+                <span class="text-[10px] font-semibold uppercase px-2 py-0.5 rounded ${tagColor} border">
+                  ${tagName}
+                </span>
+                <h4 class="font-bold text-sm text-slate-100 mt-1">${item.title}</h4>
+              </div>
+              <button onclick="copyFormula('${item.id}', \`${item.formula.replace(/`/g, '\\`')}\`)" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center text-xs transition" title="Sao chép">
+                <i class="fa-regular fa-copy"></i>
+              </button>
+            </div>
+
+            <!-- Formula display block -->
+            <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 font-mono text-xs text-sky-300 whitespace-pre-line leading-relaxed">
+              ${escapeHtml(item.formula)}
+            </div>
+
+            <div class="text-[11px] text-slate-400 space-y-0.5">
+              <p><span class="text-slate-500 font-medium">Ký hiệu:</span> ${escapeHtml(item.variables)}</p>
+              <p class="text-slate-300 bg-slate-900/60 p-1.5 rounded-lg border border-slate-800/60 text-[10px]">
+                💡 <span class="font-medium text-slate-200">Ghi chú:</span> ${escapeHtml(item.note)}
+              </p>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function filterFormulas() {
+      const query = document.getElementById('formulaSearchInput').value.toLowerCase().trim();
+      const clearBtn = document.getElementById('clearSearchBtn');
+      
+      if (query.length > 0) {
+        clearBtn.classList.remove('hidden');
+      } else {
+        clearBtn.classList.add('hidden');
+      }
+
+      let filtered = FORMULA_DATABASE.filter(item => {
+        const matchesCategory = (currentCategoryFilter === 'all') || (item.cat === currentCategoryFilter);
+        const matchesQuery = item.title.toLowerCase().includes(query) ||
+                             item.formula.toLowerCase().includes(query) ||
+                             item.variables.toLowerCase().includes(query) ||
+                             item.note.toLowerCase().includes(query);
+        return matchesCategory && matchesQuery;
+      });
+
+      renderFormulas(filtered);
+    }
+
+    function setCategoryFilter(category) {
+      currentCategoryFilter = category;
+      document.querySelectorAll('.cat-chip').forEach(btn => {
+        if (btn.getAttribute('data-cat') === category) {
+          btn.className = 'cat-chip px-3 py-1 rounded-full bg-sky-500 text-slate-950 font-bold whitespace-nowrap transition';
+        } else {
+          btn.className = 'cat-chip px-3 py-1 rounded-full bg-slate-800 text-slate-300 hover:text-white whitespace-nowrap transition';
+        }
+      });
+      filterFormulas();
+    }
+
+    function clearSearch() {
+      document.getElementById('formulaSearchInput').value = '';
+      filterFormulas();
+    }
+
+    function copyFormula(id, text) {
+      navigator.clipboard.writeText(text).then(() => {
+        showToast('Đã sao chép công thức vào bộ nhớ tạm!');
+      }).catch(() => {
+        showToast('Đã chọn công thức!');
+      });
+    }
+
+    /* ==========================================================================
+       5. TAB 3: PRACTICE QUIZ ENGINE
+       ========================================================================== */
+    const QUIZ_QUESTIONS = [
+      {
+        id: 1,
+        subject: 'Đại số tuyến tính',
+        subjectTag: 'Linear Algebra',
+        question: 'Cho ma trận A = [[3, 2], [1, 4]]. Định thức det(A) bằng bao nhiêu?',
+        options: [
+          { key: 'A', text: '14' },
+          { key: 'B', text: '10' },
+          { key: 'C', text: '12' },
+          { key: 'D', text: '8' }
+        ],
+        correct: 'B',
+        explanation: 'Áp dụng công thức định thức ma trận 2x2: det(A) = ad - bc. Thay số: (3 × 4) - (2 × 1) = 12 - 2 = 10.'
+      },
+      {
+        id: 2,
+        subject: 'Kỹ thuật Điện & Điện tử',
+        subjectTag: 'Circuits',
+        question: 'Cho đoạn mạch xoay chiều RLC có R = 4 Ω và XL = 3 Ω nối tiếp. Độ lớn tổng trở toàn mạch |Z| là:',
+        options: [
+          { key: 'A', text: '7 Ω' },
+          { key: 'B', text: '1 Ω' },
+          { key: 'C', text: '5 Ω' },
+          { key: 'D', text: '12 Ω' }
+        ],
+        correct: 'C',
+        explanation: 'Tổng trở phức Z = R + jXL. Độ lớn môđun |Z| = √(R² + XL²) = √(4² + 3²) = √(16 + 9) = √25 = 5 Ω.'
+      },
+      {
+        id: 3,
+        subject: 'Lý thuyết Điều khiển tự động',
+        subjectTag: 'Control Systems',
+        question: 'Hàm truyền G(s) = 5 / (s² + 3s + 2) có các điểm cực (poles) tại đâu trên mặt phẳng phức s?',
+        options: [
+          { key: 'A', text: 's = 1 và s = 2' },
+          { key: 'B', text: 's = -1 và s = -2' },
+          { key: 'C', text: 's = -5' },
+          { key: 'D', text: 's = 0 và s = -3' }
+        ],
+        correct: 'B',
+        explanation: 'Điểm cực là nghiệm của phương trình mẫu số: s² + 3s + 2 = 0 ⇔ (s + 1)(s + 2) = 0 ⇒ s1 = -1, s2 = -2. Cả 2 cực đều nằm ở nửa trái mặt phẳng phức, suy ra hệ thống ổn định.'
+      },
+      {
+        id: 4,
+        subject: 'Tín hiệu & Hệ thống',
+        subjectTag: 'Signals',
+        question: 'Biến đổi Laplace của hàm mũ e^(-3t)·u(t) là:',
+        options: [
+          { key: 'A', text: '1 / (s - 3)' },
+          { key: 'B', text: '1 / (s + 3)' },
+          { key: 'C', text: '3 / s' },
+          { key: 'D', text: 's / (s + 3)' }
+        ],
+        correct: 'B',
+        explanation: 'Công thức chuẩn L{ e^(at) } = 1 / (s - a). Ở đây a = -3 nên L{ e^(-3t) } = 1 / [s - (-3)] = 1 / (s + 3).'
+      },
+      {
+        id: 5,
+        subject: 'Giải tích & Vi tích phân',
+        subjectTag: 'Calculus',
+        question: 'Đạo hàm của hàm số f(x) = x · e^x là:',
+        options: [
+          { key: 'A', text: 'e^x' },
+          { key: 'B', text: 'x · e^x' },
+          { key: 'C', text: '(x + 1) · e^x' },
+          { key: 'D', text: '2x · e^x' }
+        ],
+        correct: 'C',
+        explanation: 'Sử dụng quy tắc đạo hàm tích (u·v)\' = u\'v + uv\'. Với u = x ⇒ u\' = 1; v = e^x ⇒ v\' = e^x. Ta có: 1·e^x + x·e^x = (x + 1)·e^x.'
+      }
+    ];
+
+    let currentQuestionIndex = 0;
+    let selectedOptionKey = null;
+    let userScore = 0;
+    let hasAnsweredCurrent = false;
+
+    function loadQuizQuestion() {
+      const q = QUIZ_QUESTIONS[currentQuestionIndex];
+      hasAnsweredCurrent = false;
+      selectedOptionKey = null;
+
+      // Update Header & Progress
+      document.getElementById('quizSubjectTag').innerText = q.subject;
+      document.getElementById('quizQuestionNumber').innerText = `Câu ${currentQuestionIndex + 1} / ${QUIZ_QUESTIONS.length}`;
+      document.getElementById('quizQuestionText').innerText = q.question;
+
+      const progressPercent = ((currentQuestionIndex) / QUIZ_QUESTIONS.length) * 100;
+      document.getElementById('quizProgressBar').style.width = `${progressPercent}%`;
+
+      // Render Options
+      const optionsContainer = document.getElementById('quizOptionsContainer');
+      optionsContainer.innerHTML = q.options.map(opt => `
+        <button onclick="selectQuizOption('${opt.key}')" id="optBtn_${opt.key}" class="w-full text-left p-3 rounded-xl border border-slate-700/80 bg-slate-900 hover:bg-slate-800 transition flex items-center space-x-3 text-xs font-medium">
+          <span class="w-6 h-6 rounded-lg bg-slate-800 text-slate-300 font-mono font-bold flex items-center justify-center text-xs border border-slate-700">
+            ${opt.key}
+          </span>
+          <span class="flex-1 text-slate-200">${escapeHtml(opt.text)}</span>
+        </button>
+      `).join('');
+
+      // Buttons visibility
+      document.getElementById('btnCheckAnswer').classList.remove('hidden');
+      document.getElementById('btnNextQuestion').classList.add('hidden');
+      document.getElementById('quizExplanationBox').classList.add('hidden');
+    }
+
+    function selectQuizOption(key) {
+      if (hasAnsweredCurrent) return;
+      selectedOptionKey = key;
+
+      document.querySelectorAll('#quizOptionsContainer button').forEach(btn => {
+        btn.classList.remove('border-sky-500', 'bg-sky-500/10');
+        btn.classList.add('border-slate-700/80', 'bg-slate-900');
+      });
+
+      const selectedBtn = document.getElementById(`optBtn_${key}`);
+      if (selectedBtn) {
+        selectedBtn.classList.remove('border-slate-700/80', 'bg-slate-900');
+        selectedBtn.classList.add('border-sky-500', 'bg-sky-500/10');
+      }
+    }
+
+    function checkCurrentAnswer() {
+      if (!selectedOptionKey) {
+        showToast('Vui lòng chọn 1 đáp án trước khi kiểm tra!', 'warning');
+        return;
+      }
+      if (hasAnsweredCurrent) return;
+
+      hasAnsweredCurrent = true;
+      const q = QUIZ_QUESTIONS[currentQuestionIndex];
+      const isCorrect = (selectedOptionKey === q.correct);
+
+      if (isCorrect) {
+        userScore++;
+        saveHighScore(userScore);
+      }
+
+      // Update score display
+      document.getElementById('quizScoreDisplay').innerText = `${userScore} / ${currentQuestionIndex + 1}`;
+
+      // Highlight options
+      document.querySelectorAll('#quizOptionsContainer button').forEach(btn => {
+        btn.disabled = true;
+      });
+
+      const correctBtn = document.getElementById(`optBtn_${q.correct}`);
+      if (correctBtn) {
+        correctBtn.classList.remove('border-slate-700/80', 'bg-slate-900', 'bg-sky-500/10');
+        correctBtn.classList.add('border-emerald-500', 'bg-emerald-500/20', 'text-emerald-300');
+      }
+
+      if (!isCorrect) {
+        const wrongBtn = document.getElementById(`optBtn_${selectedOptionKey}`);
+        if (wrongBtn) {
+          wrongBtn.classList.remove('border-slate-700/80', 'bg-slate-900', 'bg-sky-500/10');
+          wrongBtn.classList.add('border-rose-500', 'bg-rose-500/20', 'text-rose-300');
+        }
+      }
+
+      // Show Explanation Box
+      const expBox = document.getElementById('quizExplanationBox');
+      const badge = document.getElementById('quizFeedbackBadge');
+      const expText = document.getElementById('quizExplanationText');
+
+      if (isCorrect) {
+        badge.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400 text-sm"></i> <span class="text-emerald-400">Chính xác! (+1 điểm)</span>`;
+        expBox.className = 'p-3.5 rounded-xl border border-emerald-500/40 bg-emerald-950/20 text-xs space-y-2';
+      } else {
+        badge.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-400 text-sm"></i> <span class="text-rose-400">Chưa chính xác! Đáp án đúng là ${q.correct}</span>`;
+        expBox.className = 'p-3.5 rounded-xl border border-rose-500/40 bg-rose-950/20 text-xs space-y-2';
+      }
+
+      expText.innerHTML = `<strong>Giải thích chi tiết:</strong><br>${q.explanation}`;
+      expBox.classList.remove('hidden');
+
+      // Toggle Buttons
+      document.getElementById('btnCheckAnswer').classList.add('hidden');
+      document.getElementById('btnNextQuestion').classList.remove('hidden');
+
+      if (currentQuestionIndex === QUIZ_QUESTIONS.length - 1) {
+        document.getElementById('btnNextQuestion').innerHTML = `<span>Xem kết quả chung cuộc</span> <i class="fa-solid fa-flag-checkered"></i>`;
+      }
+    }
+
+    function goToNextQuestion() {
+      if (currentQuestionIndex < QUIZ_QUESTIONS.length - 1) {
+        currentQuestionIndex++;
+        loadQuizQuestion();
+      } else {
+        // Complete Quiz
+        document.getElementById('quizProgressBar').style.width = '100%';
+        const finalScore = userScore;
+        const total = QUIZ_QUESTIONS.length;
+        const percent = Math.round((finalScore / total) * 100);
+
+        let congratsMsg = "Cần ôn tập thêm các khái niệm!";
+        if (percent >= 80) congratsMsg = "Xuất sắc! Nắm rất vững kiến thức kỹ thuật!";
+        else if (percent >= 60) congratsMsg = "Khá tốt! Hãy đối chiếu thêm các công thức.";
+
+        document.getElementById('quizCard').innerHTML = `
+          <div class="text-center py-6 space-y-3">
+            <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-sky-500 to-emerald-400 mx-auto flex items-center justify-center text-slate-950 text-2xl font-bold shadow-lg">
+              <i class="fa-solid fa-award"></i>
+            </div>
+            <h3 class="text-base font-bold text-white">Hoàn thành bài thi thử!</h3>
+            <p class="text-xs text-slate-300 font-medium">${congratsMsg}</p>
+            <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 max-w-[200px] mx-auto">
+              <span class="text-[11px] text-slate-400 block">Tổng kết quả</span>
+              <span class="text-2xl font-mono font-bold text-emerald-400">${finalScore} / ${total}</span>
+              <span class="text-[10px] text-slate-500 block">(${percent}%)</span>
+            </div>
+            <button onclick="restartQuiz()" class="px-5 py-2.5 rounded-xl bg-sky-500 text-slate-950 font-bold text-xs shadow-md transition active:scale-95">
+              <i class="fa-solid fa-rotate-right mr-1"></i> Làm lại bài thi
+            </button>
+          </div>
+        `;
+      }
+    }
+
+    function restartQuiz() {
+      currentQuestionIndex = 0;
+      userScore = 0;
+      document.getElementById('quizScoreDisplay').innerText = `0 / 0`;
+
+      // Restore quiz card DOM template
+      document.getElementById('quizCard').innerHTML = `
+        <div class="flex items-center justify-between">
+          <span id="quizSubjectTag" class="text-[10px] font-semibold uppercase px-2 py-0.5 rounded bg-sky-500/10 text-sky-400 border border-sky-500/20"></span>
+          <span id="quizQuestionNumber" class="text-xs font-mono text-slate-400"></span>
+        </div>
+        <p id="quizQuestionText" class="text-sm font-semibold text-slate-100 leading-relaxed"></p>
+        <div id="quizOptionsContainer" class="space-y-2"></div>
+        <div class="flex space-x-2 pt-1">
+          <button id="btnCheckAnswer" onclick="checkCurrentAnswer()" class="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-cyan-500 text-slate-950 font-bold text-xs flex items-center justify-center space-x-2 shadow-md hover:opacity-95 transition">
+            <i class="fa-solid fa-circle-check"></i>
+            <span>Kiểm tra đáp án</span>
+          </button>
+          <button id="btnNextQuestion" onclick="goToNextQuestion()" class="hidden flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs flex items-center justify-center space-x-2 border border-slate-700 transition">
+            <span>Câu tiếp theo</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+        <div id="quizExplanationBox" class="hidden p-3.5 rounded-xl border text-xs space-y-2 transition-all duration-300">
+          <div class="flex items-center space-x-2 font-bold" id="quizFeedbackBadge"></div>
+          <div id="quizExplanationText" class="text-slate-300 leading-relaxed font-sans text-[11px] pt-1 border-t border-slate-800"></div>
+        </div>
+      `;
+
+      loadQuizQuestion();
+      showToast('Đã bắt đầu lại bài thi!');
+    }
+
+    function saveHighScore(score) {
+      const currentHigh = parseInt(localStorage.getItem(STORAGE_KEY_QUIZ_HIGHSCORE) || '0', 10);
+      if (score > currentHigh) {
+        localStorage.setItem(STORAGE_KEY_QUIZ_HIGHSCORE, score.toString());
+        document.getElementById('highScoreText').innerText = `${score} điểm`;
+      }
+    }
+
+    function loadHighScore() {
+      const currentHigh = localStorage.getItem(STORAGE_KEY_QUIZ_HIGHSCORE) || '0';
+      document.getElementById('highScoreText').innerText = `${currentHigh} điểm`;
+    }
+
+    /* ==========================================================================
+       6. TAB 4: DEADLINES & TASK COUNTDOWN ENGINE
+       ========================================================================== */
+    let deadlinesList = [];
+
+    function initSampleDeadlines() {
+      const stored = localStorage.getItem(STORAGE_KEY_DEADLINES);
+      if (stored) {
+        try {
+          deadlinesList = JSON.parse(stored);
+        } catch (e) {
+          deadlinesList = [];
+        }
+      }
+
+      // Default sample engineering deadlines if empty
+      if (!deadlinesList || deadlinesList.length === 0) {
+        const now = new Date();
+        const tomorrow = new Date(now.getTime() + (26 * 60 * 60 * 1000)); // +26h
+        const nextWeek = new Date(now.getTime() + (5 * 24 * 60 * 60 * 1000)); // +5 days
+
+        deadlinesList = [
+          {
+            id: 'dl_' + Date.now(),
+            title: 'Nộp Bài tập lớn Vi điều khiển (STM32)',
+            subject: 'Hệ vi xử lý',
+            datetime: tomorrow.toISOString(),
+            priority: 'high',
+            completed: false
+          },
+          {
+            id: 'dl_' + (Date.now() + 1),
+            title: 'Thi Giữa kỳ Lý thuyết Mạch 2',
+            subject: 'Kỹ thuật Điện',
+            datetime: nextWeek.toISOString(),
+            priority: 'medium',
+            completed: false
+          }
+        ];
+        saveDeadlines();
+      }
+    }
+
+    function saveDeadlines() {
+      localStorage.setItem(STORAGE_KEY_DEADLINES, JSON.stringify(deadlinesList));
+      renderDeadlines();
+      checkUpcomingUrgent();
+    }
+
+    function toggleAddTaskModal(show) {
+      const modal = document.getElementById('addDeadlineModal');
+      if (show) {
+        // Set default minimum datetime to now
+        const now = new Date();
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        document.getElementById('inputTaskDatetime').min = now.toISOString().slice(0, 16);
+        document.getElementById('inputTaskDatetime').value = now.toISOString().slice(0, 16);
+        modal.classList.remove('hidden');
+      } else {
+        modal.classList.add('hidden');
+        document.getElementById('addDeadlineForm').reset();
+      }
+    }
+
+    function handleCreateDeadline(e) {
+      e.preventDefault();
+      const title = document.getElementById('inputTaskTitle').value.trim();
+      const subject = document.getElementById('inputTaskSubject').value.trim() || 'Kỹ thuật';
+      const priority = document.getElementById('inputTaskPriority').value;
+      const datetime = document.getElementById('inputTaskDatetime').value;
+
+      if (!title || !datetime) {
+        showToast('Vui lòng điền đủ tên và thời hạn!', 'warning');
+        return;
+      }
+
+      const newTask = {
+        id: 'dl_' + Date.now(),
+        title,
+        subject,
+        datetime: new Date(datetime).toISOString(),
+        priority,
+        completed: false
+      };
+
+      deadlinesList.unshift(newTask);
+      saveDeadlines();
+      toggleAddTaskModal(false);
+      showToast('Đã thêm deadline thành công!');
+    }
+
+    function toggleCompleteDeadline(id) {
+      const item = deadlinesList.find(d => d.id === id);
+      if (item) {
+        item.completed = !item.completed;
+        saveDeadlines();
+        showToast(item.completed ? 'Đã hoàn thành công việc!' : 'Đã mở lại công việc.');
+      }
+    }
+
+    function deleteDeadline(id) {
+      if (confirm('Bạn có chắc chắn muốn xóa deadline này?')) {
+        deadlinesList = deadlinesList.filter(d => d.id !== id);
+        saveDeadlines();
+        showToast('Đã xóa deadline.');
+      }
+    }
+
+    function setDeadlineFilter(filter) {
+      currentDeadlineFilter = filter;
+      document.getElementById('filterDlActive').className = filter === 'active' ? 'px-3 py-1 rounded-lg bg-sky-500 text-slate-950 font-bold transition' : 'px-3 py-1 rounded-lg bg-slate-800 text-slate-300 hover:text-white transition';
+      document.getElementById('filterDlAll').className = filter === 'all' ? 'px-3 py-1 rounded-lg bg-sky-500 text-slate-950 font-bold transition' : 'px-3 py-1 rounded-lg bg-slate-800 text-slate-300 hover:text-white transition';
+      document.getElementById('filterDlDone').className = filter === 'completed' ? 'px-3 py-1 rounded-lg bg-sky-500 text-slate-950 font-bold transition' : 'px-3 py-1 rounded-lg bg-slate-800 text-slate-300 hover:text-white transition';
+      renderDeadlines();
+    }
+
+    function formatTimeRemaining(targetIso) {
+      const now = new Date().getTime();
+      const target = new Date(targetIso).getTime();
+      const diff = target - now;
+
+      if (diff <= 0) {
+        return { isExpired: true, text: 'Đã quá hạn', badgeColor: 'bg-rose-500/20 text-rose-400 border-rose-500/30' };
+      }
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+      let badgeColor = 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
+      if (days < 1) {
+        badgeColor = 'bg-rose-500/20 text-rose-400 border-rose-500/30 animate-pulse';
+      } else if (days <= 3) {
+        badgeColor = 'bg-amber-500/20 text-amber-400 border-amber-500/30';
+      }
+
+      let text = '';
+      if (days > 0) text += `${days} ngày `;
+      text += `${hours}h ${mins}m`;
+
+      return { isExpired: false, text: `Còn ${text}`, badgeColor, days, hours };
+    }
+
+    function renderDeadlines() {
+      const container = document.getElementById('deadlineList');
+      const emptyState = document.getElementById('emptyDeadlineState');
+
+      let filtered = deadlinesList;
+      if (currentDeadlineFilter === 'active') {
+        filtered = deadlinesList.filter(d => !d.completed);
+      } else if (currentDeadlineFilter === 'completed') {
+        filtered = deadlinesList.filter(d => d.completed);
+      }
+
+      if (filtered.length === 0) {
+        container.innerHTML = '';
+        emptyState.classList.remove('hidden');
+        return;
+      }
+      emptyState.classList.add('hidden');
+
+      container.innerHTML = filtered.map(item => {
+        const remaining = formatTimeRemaining(item.datetime);
+        const dateObj = new Date(item.datetime);
+        const formattedDate = dateObj.toLocaleDateString('vi-VN', {
+          day: '2-digit', month: '2-digit', year: 'numeric',
+          hour: '2-digit', minute: '2-digit'
+        });
+
+        const isDone = item.completed;
+
+        return `
+          <div class="glass-card rounded-2xl p-4 border ${isDone ? 'border-slate-800 opacity-60' : 'border-slate-700/80'} shadow-md space-y-2.5 transition">
+            <div class="flex items-start justify-between">
+              <div class="flex items-start space-x-2.5">
+                <button onclick="toggleCompleteDeadline('${item.id}')" class="mt-0.5 w-5 h-5 rounded-lg border ${isDone ? 'bg-emerald-500 border-emerald-500 text-slate-950' : 'border-slate-600 hover:border-sky-400 text-transparent'} flex items-center justify-center text-[10px] transition">
+                  <i class="fa-solid fa-check"></i>
+                </button>
+                <div>
+                  <h4 class="font-bold text-sm ${isDone ? 'line-through text-slate-400' : 'text-slate-100'}">${escapeHtml(item.title)}</h4>
+                  <div class="flex items-center space-x-2 mt-0.5">
+                    <span class="text-[10px] font-medium text-slate-400">${escapeHtml(item.subject)}</span>
+                    <span class="text-slate-600 text-xs">&bull;</span>
+                    <span class="text-[10px] font-mono text-slate-500">${formattedDate}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Delete Action -->
+              <button onclick="deleteDeadline('${item.id}')" class="text-slate-500 hover:text-rose-400 text-xs p-1 transition" title="Xóa">
+                <i class="fa-solid fa-trash-can"></i>
+              </button>
+            </div>
+
+            <!-- Countdown Pill Bar -->
+            <div class="flex items-center justify-between pt-1">
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded-full border ${isDone ? 'bg-slate-800 text-slate-400 border-slate-700' : remaining.badgeColor}">
+                <i class="fa-solid fa-hourglass-half text-[9px] mr-1"></i>
+                ${isDone ? 'Đã xong' : remaining.text}
+              </span>
+              <span class="text-[10px] uppercase font-semibold ${item.priority === 'high' ? 'text-rose-400' : item.priority === 'medium' ? 'text-amber-400' : 'text-slate-400'}">
+                ${item.priority === 'high' ? 'Gấp' : item.priority === 'medium' ? 'Ưu tiên' : 'Thường'}
+              </span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function checkUpcomingUrgent() {
+      const activeUrgent = deadlinesList.some(d => {
+        if (d.completed) return false;
+        const diff = new Date(d.datetime).getTime() - Date.now();
+        return diff > 0 && diff < (24 * 60 * 60 * 1000); // < 24h
+      });
+
+      const dot = document.getElementById('navDeadlineDot');
+      if (activeUrgent) dot.classList.remove('hidden');
+      else dot.classList.add('hidden');
+    }
+
+    // Refresh countdown every 30 seconds
+    setInterval(() => {
+      if (currentTab === 'deadlines') {
+        renderDeadlines();
+      }
+      checkUpcomingUrgent();
+    }, 30000);
+
+    /* ==========================================================================
+       7. UTILS & INITIALIZATION
+       ========================================================================== */
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+    }
+
+    // Initialize all components on window load
+    window.addEventListener('DOMContentLoaded', () => {
+      calculateComplexRect();
+      calculateMatrix();
+      renderFormulas(FORMULA_DATABASE);
+      loadHighScore();
+      loadQuizQuestion();
+      initSampleDeadlines();
+      renderDeadlines();
+    });
+  </script>
+</body>
+</html>
